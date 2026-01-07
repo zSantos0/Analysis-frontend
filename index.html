@@ -5,8 +5,8 @@
   <style>
     body { font-family: Arial; padding: 20px; background: #f4f4f4; }
     h1 { text-align: center; }
-    .login, .panel { max-width: 400px; margin: auto; margin-top: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
-    input, button { width: 100%; padding: 10px; margin: 5px 0; }
+    .login, .panel { max-width: 450px; margin: auto; margin-top: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
+    input, select, button { width: 100%; padding: 10px; margin: 5px 0; }
     button { cursor: pointer; background: #0070f3; color: #fff; border: none; border-radius: 5px; }
     button:hover { background: #005ac1; }
     #status { margin-top: 20px; font-weight: bold; text-align: center; }
@@ -26,6 +26,20 @@
 
   <div class="panel" id="panel" style="display:none;">
     <h3>Painel de Análises</h3>
+    
+    <!-- Seletor de campeonato -->
+    <select id="campeonato">
+      <option value="Premier League">Premier League</option>
+      <option value="Serie A">Serie A</option>
+      <option value="La Liga">La Liga</option>
+      <option value="Bundesliga">Bundesliga</option>
+      <option value="Ligue 1">Ligue 1</option>
+    </select>
+    
+    <!-- Seletor de times -->
+    <select id="time1"></select>
+    <select id="time2"></select>
+    
     <button onclick="gerarAnalise('under-over')">Gerar Under/Over</button>
     <button onclick="gerarAnalise('escanteios')">Gerar Escanteios</button>
     <button onclick="gerarAnalise('cartoes')">Gerar Cartões</button>
@@ -37,6 +51,42 @@
 
   <script>
     const backendURL = 'https://analysisfrontend01.vercel.app/'; // Substitua pelo seu backend
+
+    const timesPorCampeonato = {
+      'Premier League': ['Liverpool', 'Manchester City', 'Chelsea', 'Arsenal'],
+      'Serie A': ['Juventus', 'Inter', 'Milan', 'Napoli'],
+      'La Liga': ['Real Madrid', 'Barcelona', 'Atletico', 'Sevilla'],
+      'Bundesliga': ['Bayern', 'Dortmund', 'Leverkusen', 'RB Leipzig'],
+      'Ligue 1': ['PSG', 'Marseille', 'Lyon', 'Monaco']
+    };
+
+    // Inicializa seletor de times
+    function atualizarTimes() {
+      const campeonato = document.getElementById('campeonato').value;
+      const times = timesPorCampeonato[campeonato];
+      const time1 = document.getElementById('time1');
+      const time2 = document.getElementById('time2');
+      
+      time1.innerHTML = '';
+      time2.innerHTML = '';
+      
+      times.forEach(t => {
+        const option1 = document.createElement('option');
+        option1.value = t;
+        option1.textContent = t;
+        time1.appendChild(option1);
+
+        const option2 = document.createElement('option');
+        option2.value = t;
+        option2.textContent = t;
+        time2.appendChild(option2);
+      });
+      // Evita selecionar o mesmo time
+      time2.selectedIndex = 1;
+    }
+
+    document.getElementById('campeonato').addEventListener('change', atualizarTimes);
+    atualizarTimes();
 
     // Verifica status da API
     fetch(backendURL)
@@ -59,29 +109,33 @@
       }
     }
 
-    // Simulação de análise com lógica básica
+    // Função avançada de geração de análise
     function gerarAnalise(tipo) {
       const container = document.getElementById('analyses');
+      const campeonato = document.getElementById('campeonato').value;
+      const time1 = document.getElementById('time1').value;
+      const time2 = document.getElementById('time2').value;
+
+      if(time1 === time2) { alert('Escolha times diferentes!'); return; }
+
+      const favorito = Math.random() > 0.5 ? time1 : time2;
+      const agressivo = Math.random() > 0.5;
+      const gols = Math.floor(Math.random() * 5);
+      const escanteios = Math.floor(Math.random() * 10) + 4;
+      const cartoes = Math.floor(Math.random() * 5);
+      
       let resultado = '';
-      const times = ['Time A', 'Time B', 'Time C', 'Time D'];
-      const favorito = times[Math.floor(Math.random() * times.length)];
-      const agressivo = Math.random() > 0.5; // true = agressivo, false = controlado
-      const gols = Math.floor(Math.random() * 5); // 0-4
-      const escanteios = Math.floor(Math.random() * 10) + 4; // 4-13
-      const cartoes = Math.floor(Math.random() * 5); // 0-4
 
       switch(tipo) {
         case 'under-over':
-          resultado = `Jogo ${times[0]} x ${times[1]} → Favorito: ${favorito} (${agressivo ? 'Agressivo' : 'Controlado'}) → ${gols > 2 ? 'Over 2.5' : 'Under 3.5'} gols`;
+          resultado = `[${campeonato}] ${time1} x ${time2} → Favorito: ${favorito} (${agressivo ? 'Agressivo' : 'Controlado'}) → ${gols > 2 ? 'Over 2.5' : 'Under 3.5'} gols`;
           break;
         case 'escanteios':
-          resultado = `Jogo ${times[2]} x ${times[3]} → ${escanteios} escanteios prováveis → ${escanteios > 7 ? 'Over' : 'Under'}`;
+          resultado = `[${campeonato}] ${time1} x ${time2} → ${escanteios} escanteios → ${escanteios > 7 ? 'Over' : 'Under'}`;
           break;
         case 'cartoes':
-          resultado = `Jogo ${times[0]} x ${times[3]} → ${cartoes} cartões esperados → ${cartoes > 2 ? 'Mais de 3 cartões' : 'Menos de 3 cartões'}`;
+          resultado = `[${campeonato}] ${time1} x ${time2} → ${cartoes} cartões → ${cartoes > 2 ? 'Mais de 3' : 'Menos de 3'}`;
           break;
-        default:
-          resultado = 'Nenhuma análise';
       }
 
       const div = document.createElement('div');
