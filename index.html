@@ -3,13 +3,15 @@
 <head>
   <title>Analysis Site</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    .login, .panel { max-width: 400px; margin: auto; margin-top: 20px; }
-    input, button { width: 100%; padding: 8px; margin: 5px 0; }
-    button { cursor: pointer; }
-    #status { margin-top: 20px; font-weight: bold; }
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    h1 { text-align: center; }
+    .login, .panel { max-width: 400px; margin: auto; margin-top: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
+    input, button { width: 100%; padding: 10px; margin: 5px 0; }
+    button { cursor: pointer; background: #0070f3; color: #fff; border: none; border-radius: 5px; }
+    button:hover { background: #005ac1; }
+    #status { margin-top: 20px; font-weight: bold; text-align: center; }
     .analyses { margin-top: 10px; }
-    .analyses div { margin-bottom: 10px; }
+    .analyses div { margin-bottom: 10px; padding: 8px; background: #e2e8f0; border-radius: 5px; }
   </style>
 </head>
 <body>
@@ -34,9 +36,9 @@
   <div id="status">Status da API: carregando...</div>
 
   <script>
-    const backendURL = 'https://analysisfrontend01.vercel.app/'; // Substitua pelo seu link do backend
+    const backendURL = 'https://analysisfrontend01.vercel.app/'; // Substitua pelo seu backend
 
-    // Verifica se a API está online
+    // Verifica status da API
     fetch(backendURL)
       .then(res => res.text())
       .then(data => document.getElementById('status').textContent = 'API: ' + data)
@@ -57,20 +59,26 @@
       }
     }
 
-    // Função simulada de geração de análise
+    // Simulação de análise com lógica básica
     function gerarAnalise(tipo) {
       const container = document.getElementById('analyses');
       let resultado = '';
+      const times = ['Time A', 'Time B', 'Time C', 'Time D'];
+      const favorito = times[Math.floor(Math.random() * times.length)];
+      const agressivo = Math.random() > 0.5; // true = agressivo, false = controlado
+      const gols = Math.floor(Math.random() * 5); // 0-4
+      const escanteios = Math.floor(Math.random() * 10) + 4; // 4-13
+      const cartoes = Math.floor(Math.random() * 5); // 0-4
 
       switch(tipo) {
         case 'under-over':
-          resultado = 'Análise Under/Over: Favorito agressivo → Under 3.5';
+          resultado = `Jogo ${times[0]} x ${times[1]} → Favorito: ${favorito} (${agressivo ? 'Agressivo' : 'Controlado'}) → ${gols > 2 ? 'Over 2.5' : 'Under 3.5'} gols`;
           break;
         case 'escanteios':
-          resultado = 'Análise Escanteios: Over 7.5 escanteios provável';
+          resultado = `Jogo ${times[2]} x ${times[3]} → ${escanteios} escanteios prováveis → ${escanteios > 7 ? 'Over' : 'Under'}`;
           break;
         case 'cartoes':
-          resultado = 'Análise Cartões: Jogo intenso → Mais de 3 cartões';
+          resultado = `Jogo ${times[0]} x ${times[3]} → ${cartoes} cartões esperados → ${cartoes > 2 ? 'Mais de 3 cartões' : 'Menos de 3 cartões'}`;
           break;
         default:
           resultado = 'Nenhuma análise';
