@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Analysis Site</title>
+</head>
+<body>
+  <h1>Site Online</h1>
+  <p>Backend está funcionando: <span id="status"></span></p>
+  <script>
+    fetch(https://analysis-backend-1-iebd.onrender.com)
+      .then(res => res.text())
+      .then(data => document.getElementById('status').textContent = data)
+      .catch(err => document.getElementById('status').textContent = 'Erro');
+  </script>
+</body>
+</html>
