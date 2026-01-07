@@ -1,21 +1,22 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html>
 <head>
-  <title>Analysis Site</title>
+  <title>Analysis Site Avançado</title>
   <style>
     body { font-family: Arial; padding: 20px; background: #f4f4f4; }
     h1 { text-align: center; }
-    .login, .panel { max-width: 450px; margin: auto; margin-top: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
+    .login, .panel { max-width: 480px; margin: auto; margin-top: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
     input, select, button { width: 100%; padding: 10px; margin: 5px 0; }
     button { cursor: pointer; background: #0070f3; color: #fff; border: none; border-radius: 5px; }
     button:hover { background: #005ac1; }
     #status { margin-top: 20px; font-weight: bold; text-align: center; }
-    .analyses { margin-top: 10px; }
+    .analyses { margin-top: 10px; max-height: 400px; overflow-y: auto; }
     .analyses div { margin-bottom: 10px; padding: 8px; background: #e2e8f0; border-radius: 5px; }
+    .filter { margin-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>Analysis Site</h1>
+  <h1>Analysis Site Avançado</h1>
 
   <div class="login">
     <h3>Login Admin</h3>
@@ -26,8 +27,7 @@
 
   <div class="panel" id="panel" style="display:none;">
     <h3>Painel de Análises</h3>
-    
-    <!-- Seletor de campeonato -->
+
     <select id="campeonato">
       <option value="Premier League">Premier League</option>
       <option value="Serie A">Serie A</option>
@@ -35,11 +35,20 @@
       <option value="Bundesliga">Bundesliga</option>
       <option value="Ligue 1">Ligue 1</option>
     </select>
-    
-    <!-- Seletor de times -->
+
     <select id="time1"></select>
     <select id="time2"></select>
-    
+
+    <div class="filter">
+      <label>Filtrar análises:</label>
+      <select id="tipoFiltro">
+        <option value="all">Todas</option>
+        <option value="under-over">Under/Over</option>
+        <option value="escanteios">Escanteios</option>
+        <option value="cartoes">Cartões</option>
+      </select>
+    </div>
+
     <button onclick="gerarAnalise('under-over')">Gerar Under/Over</button>
     <button onclick="gerarAnalise('escanteios')">Gerar Escanteios</button>
     <button onclick="gerarAnalise('cartoes')">Gerar Cartões</button>
@@ -50,7 +59,9 @@
   <div id="status">Status da API: carregando...</div>
 
   <script>
-    const backendURL = 'https://analysisfrontend01.vercel.app/'; // Substitua pelo seu backend
+    const backendURL = 'https://SEU-BACKEND.onrender.com'; // Substitua pelo seu backend
+    const analysesContainer = document.getElementById('analyses');
+    let todasAnalises = [];
 
     const timesPorCampeonato = {
       'Premier League': ['Liverpool', 'Manchester City', 'Chelsea', 'Arsenal'],
@@ -60,28 +71,17 @@
       'Ligue 1': ['PSG', 'Marseille', 'Lyon', 'Monaco']
     };
 
-    // Inicializa seletor de times
     function atualizarTimes() {
       const campeonato = document.getElementById('campeonato').value;
       const times = timesPorCampeonato[campeonato];
       const time1 = document.getElementById('time1');
       const time2 = document.getElementById('time2');
-      
       time1.innerHTML = '';
       time2.innerHTML = '';
-      
       times.forEach(t => {
-        const option1 = document.createElement('option');
-        option1.value = t;
-        option1.textContent = t;
-        time1.appendChild(option1);
-
-        const option2 = document.createElement('option');
-        option2.value = t;
-        option2.textContent = t;
-        time2.appendChild(option2);
+        const option1 = document.createElement('option'); option1.value = t; option1.textContent = t; time1.appendChild(option1);
+        const option2 = document.createElement('option'); option2.value = t; option2.textContent = t; time2.appendChild(option2);
       });
-      // Evita selecionar o mesmo time
       time2.selectedIndex = 1;
     }
 
@@ -94,11 +94,9 @@
       .then(data => document.getElementById('status').textContent = 'API: ' + data)
       .catch(err => document.getElementById('status').textContent = 'API: Erro');
 
-    // Login admin
     function login() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-
       if(email === 'admin@meusite.com' && password === 'Admin123!') {
         alert('Login bem-sucedido! Painel liberado.');
         document.getElementById('panel').style.display = 'block';
@@ -109,13 +107,10 @@
       }
     }
 
-    // Função avançada de geração de análise
     function gerarAnalise(tipo) {
-      const container = document.getElementById('analyses');
       const campeonato = document.getElementById('campeonato').value;
       const time1 = document.getElementById('time1').value;
       const time2 = document.getElementById('time2').value;
-
       if(time1 === time2) { alert('Escolha times diferentes!'); return; }
 
       const favorito = Math.random() > 0.5 ? time1 : time2;
@@ -123,9 +118,8 @@
       const gols = Math.floor(Math.random() * 5);
       const escanteios = Math.floor(Math.random() * 10) + 4;
       const cartoes = Math.floor(Math.random() * 5);
-      
-      let resultado = '';
 
+      let resultado = '';
       switch(tipo) {
         case 'under-over':
           resultado = `[${campeonato}] ${time1} x ${time2} → Favorito: ${favorito} (${agressivo ? 'Agressivo' : 'Controlado'}) → ${gols > 2 ? 'Over 2.5' : 'Under 3.5'} gols`;
@@ -138,10 +132,24 @@
           break;
       }
 
-      const div = document.createElement('div');
-      div.textContent = resultado;
-      container.prepend(div);
+      const analiseObj = { tipo, texto: resultado };
+      todasAnalises.unshift(analiseObj);
+      atualizarPainel();
     }
+
+    function atualizarPainel() {
+      const tipoFiltro = document.getElementById('tipoFiltro').value;
+      analysesContainer.innerHTML = '';
+      todasAnalises.forEach(a => {
+        if(tipoFiltro === 'all' || tipoFiltro === a.tipo) {
+          const div = document.createElement('div');
+          div.textContent = a.texto;
+          analysesContainer.appendChild(div);
+        }
+      });
+    }
+
+    document.getElementById('tipoFiltro').addEventListener('change', atualizarPainel);
   </script>
 </body>
 </html>
