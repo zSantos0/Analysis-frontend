@@ -2,15 +2,48 @@
 <html>
 <head>
   <title>Analysis Site</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .login { max-width: 300px; margin: auto; }
+    input { width: 100%; padding: 8px; margin: 5px 0; }
+    button { padding: 8px 12px; margin-top: 10px; }
+    #status { margin-top: 20px; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>Site Online</h1>
-  <p>Backend está funcionando: <span id="status"></span></p>
+  <h1>Analysis Site</h1>
+
+  <div class="login">
+    <h3>Login Admin</h3>
+    <input type="email" id="email" placeholder="Email" value="admin@meusite.com">
+    <input type="password" id="password" placeholder="Senha" value="Admin123!">
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <div id="status">Status da API: carregando...</div>
+
   <script>
-    fetch(https://analysis-backend-1-iebd.onrender.com)
+    const backendURL = 'https://analysisfrontend01.vercel.app/'; // Substitua pelo seu link do backend
+
+    // Verifica se a API está online
+    fetch(backendURL)
       .then(res => res.text())
-      .then(data => document.getElementById('status').textContent = data)
-      .catch(err => document.getElementById('status').textContent = 'Erro');
+      .then(data => document.getElementById('status').textContent = 'API: ' + data)
+      .catch(err => document.getElementById('status').textContent = 'API: Erro');
+
+    // Função de login
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Aqui vamos apenas simular login
+      if(email === 'admin@meusite.com' && password === 'Admin123!') {
+        alert('Login bem-sucedido! Você é admin.');
+        document.getElementById('status').textContent += ' (Admin logado)';
+      } else {
+        alert('Email ou senha incorretos.');
+      }
+    }
   </script>
 </body>
 </html>
