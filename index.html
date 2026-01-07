@@ -52,7 +52,17 @@
     <button onclick="gerarAnalise('under-over')">Gerar Under/Over</button>
     <button onclick="gerarAnalise('escanteios')">Gerar Escanteios</button>
     <button onclick="gerarAnalise('cartoes')">Gerar Cartões</button>
-    <button onclick="gerarAnalisesDia()">Gerar Todas Análises do Dia</button>
+    <button onclick="gerarAnalisesDia()">async function gerarAnalisesDia() {
+  const res = await fetch(`${backendURL}/jogos-do-dia`);
+  const jogos = await res.json();
+
+  jogos.forEach(j => {
+    gerarAnalise('under-over', [j.time1, j.time2]);
+    gerarAnalise('escanteios', [j.time1, j.time2]);
+    gerarAnalise('cartoes', [j.time1, j.time2]);
+  });
+  alert('Todas análises do dia geradas!');
+}</button>
 
     <div class="analyses" id="analyses"></div>
   </div>
