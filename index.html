@@ -1,22 +1,22 @@
-      <!DOCTYPE html>
+          <!DOCTYPE html>
 <html>
 <head>
-  <title>Analysis Site Avançado</title>
+  <title>Analysis Site Pro</title>
   <style>
     body { font-family: Arial; padding: 20px; background: #f4f4f4; }
     h1 { text-align: center; }
-    .login, .panel { max-width: 480px; margin: auto; margin-top: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
+    .login, .panel { max-width: 500px; margin: auto; margin-top: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
     input, select, button { width: 100%; padding: 10px; margin: 5px 0; }
     button { cursor: pointer; background: #0070f3; color: #fff; border: none; border-radius: 5px; }
     button:hover { background: #005ac1; }
     #status { margin-top: 20px; font-weight: bold; text-align: center; }
-    .analyses { margin-top: 10px; max-height: 400px; overflow-y: auto; }
+    .analyses { margin-top: 10px; max-height: 500px; overflow-y: auto; }
     .analyses div { margin-bottom: 10px; padding: 8px; background: #e2e8f0; border-radius: 5px; }
     .filter { margin-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>Analysis Site Avançado</h1>
+  <h1>Analysis Site Pro</h1>
 
   <div class="login">
     <h3>Login Admin</h3>
@@ -52,6 +52,7 @@
     <button onclick="gerarAnalise('under-over')">Gerar Under/Over</button>
     <button onclick="gerarAnalise('escanteios')">Gerar Escanteios</button>
     <button onclick="gerarAnalise('cartoes')">Gerar Cartões</button>
+    <button onclick="gerarAnalisesDia()">Gerar Todas Análises do Dia</button>
 
     <div class="analyses" id="analyses"></div>
   </div>
@@ -59,7 +60,7 @@
   <div id="status">Status da API: carregando...</div>
 
   <script>
-    const backendURL = 'https://SEU-BACKEND.onrender.com'; // Substitua pelo seu backend
+    const backendURL = 'https://analysisfrontend01.vercel.app/'; // Substitua pelo seu backend
     const analysesContainer = document.getElementById('analyses');
     let todasAnalises = [];
 
@@ -88,7 +89,7 @@
     document.getElementById('campeonato').addEventListener('change', atualizarTimes);
     atualizarTimes();
 
-    // Verifica status da API
+    // Status API
     fetch(backendURL)
       .then(res => res.text())
       .then(data => document.getElementById('status').textContent = 'API: ' + data)
@@ -107,10 +108,10 @@
       }
     }
 
-    function gerarAnalise(tipo) {
+    function gerarAnalise(tipo, customTimes) {
       const campeonato = document.getElementById('campeonato').value;
-      const time1 = document.getElementById('time1').value;
-      const time2 = document.getElementById('time2').value;
+      const time1 = customTimes?.[0] || document.getElementById('time1').value;
+      const time2 = customTimes?.[1] || document.getElementById('time2').value;
       if(time1 === time2) { alert('Escolha times diferentes!'); return; }
 
       const favorito = Math.random() > 0.5 ? time1 : time2;
@@ -132,8 +133,7 @@
           break;
       }
 
-      const analiseObj = { tipo, texto: resultado };
-      todasAnalises.unshift(analiseObj);
+      todasAnalises.unshift({ tipo, texto: resultado });
       atualizarPainel();
     }
 
@@ -147,6 +147,21 @@
           analysesContainer.appendChild(div);
         }
       });
+    }
+
+    // Gera todas análises do dia automaticamente para cada jogo do campeonato
+    function gerarAnalisesDia() {
+      const campeonato = document.getElementById('campeonato').value;
+      const times = timesPorCampeonato[campeonato];
+
+      for(let i=0; i<times.length; i++) {
+        for(let j=i+1; j<times.length; j++) {
+          gerarAnalise('under-over', [times[i], times[j]]);
+          gerarAnalise('escanteios', [times[i], times[j]]);
+          gerarAnalise('cartoes', [times[i], times[j]]);
+        }
+      }
+      alert('Todas análises do dia geradas!');
     }
 
     document.getElementById('tipoFiltro').addEventListener('change', atualizarPainel);
