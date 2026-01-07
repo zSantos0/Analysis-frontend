@@ -1,4 +1,4 @@
-          <!DOCTYPE html>
+      <!DOCTYPE html>
 <html>
 <head>
   <title>Analysis Site Pro</title>
@@ -52,17 +52,7 @@
     <button onclick="gerarAnalise('under-over')">Gerar Under/Over</button>
     <button onclick="gerarAnalise('escanteios')">Gerar Escanteios</button>
     <button onclick="gerarAnalise('cartoes')">Gerar Cartões</button>
-    <button onclick="> async function gerarAnalisesDia) {
-  const res = await fetch(`${backendURL}/jogos-do-dia`);
-  const jogos = await res.json();
-
-  jogos.forEach(j => {
-    gerarAnalise('under-over', [j.time1, j.time2]);
-    gerarAnalise('escanteios', [j.time1, j.time2]);
-    gerarAnalise('cartoes', [j.time1, j.time2]);
-  });
-  alert('Todas análises do dia geradas!'); 
-}</button>
+    <button onclick="gerarAnalisesDia()">Gerar Todas Análises do Dia</button>
 
     <div class="analyses" id="analyses"></div>
   </div>
@@ -70,7 +60,7 @@
   <div id="status">Status da API: carregando...</div>
 
   <script>
-    const backendURL = 'https://analysisfrontend01.vercel.app/'; // Substitua pelo seu backend
+    const backendURL = 'https://SEU-BACKEND.onrender.com'; // Substitua pelo seu backend
     const analysesContainer = document.getElementById('analyses');
     let todasAnalises = [];
 
