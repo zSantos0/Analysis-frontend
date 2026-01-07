@@ -4,10 +4,12 @@
   <title>Analysis Site</title>
   <style>
     body { font-family: Arial; padding: 20px; }
-    .login { max-width: 300px; margin: auto; }
-    input { width: 100%; padding: 8px; margin: 5px 0; }
-    button { padding: 8px 12px; margin-top: 10px; }
+    .login, .panel { max-width: 400px; margin: auto; margin-top: 20px; }
+    input, button { width: 100%; padding: 8px; margin: 5px 0; }
+    button { cursor: pointer; }
     #status { margin-top: 20px; font-weight: bold; }
+    .analyses { margin-top: 10px; }
+    .analyses div { margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -18,6 +20,15 @@
     <input type="email" id="email" placeholder="Email" value="admin@meusite.com">
     <input type="password" id="password" placeholder="Senha" value="Admin123!">
     <button onclick="login()">Entrar</button>
+  </div>
+
+  <div class="panel" id="panel" style="display:none;">
+    <h3>Painel de Análises</h3>
+    <button onclick="gerarAnalise('under-over')">Gerar Under/Over</button>
+    <button onclick="gerarAnalise('escanteios')">Gerar Escanteios</button>
+    <button onclick="gerarAnalise('cartoes')">Gerar Cartões</button>
+
+    <div class="analyses" id="analyses"></div>
   </div>
 
   <div id="status">Status da API: carregando...</div>
@@ -31,18 +42,43 @@
       .then(data => document.getElementById('status').textContent = 'API: ' + data)
       .catch(err => document.getElementById('status').textContent = 'API: Erro');
 
-    // Função de login
+    // Login admin
     function login() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-      // Aqui vamos apenas simular login
       if(email === 'admin@meusite.com' && password === 'Admin123!') {
-        alert('Login bem-sucedido! Você é admin.');
+        alert('Login bem-sucedido! Painel liberado.');
+        document.getElementById('panel').style.display = 'block';
         document.getElementById('status').textContent += ' (Admin logado)';
+        document.querySelector('.login').style.display = 'none';
       } else {
         alert('Email ou senha incorretos.');
       }
+    }
+
+    // Função simulada de geração de análise
+    function gerarAnalise(tipo) {
+      const container = document.getElementById('analyses');
+      let resultado = '';
+
+      switch(tipo) {
+        case 'under-over':
+          resultado = 'Análise Under/Over: Favorito agressivo → Under 3.5';
+          break;
+        case 'escanteios':
+          resultado = 'Análise Escanteios: Over 7.5 escanteios provável';
+          break;
+        case 'cartoes':
+          resultado = 'Análise Cartões: Jogo intenso → Mais de 3 cartões';
+          break;
+        default:
+          resultado = 'Nenhuma análise';
+      }
+
+      const div = document.createElement('div');
+      div.textContent = resultado;
+      container.prepend(div);
     }
   </script>
 </body>
