@@ -1,4 +1,4 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Analysis Site Pro</title>
@@ -150,16 +150,19 @@
     }
 
     // Gera todas análises do dia automaticamente para cada jogo do campeonato
-    function "gerarAnaliseDia()"<gerar todas as análises> app.get('/jogos-do-dia', (req, res) => {
-  const jogos = [
-    { campeonato: 'Premier League', time1: 'Liverpool', time2: 'Chelsea', favorito: 'Liverpool', perfil: 'Agressivo', gols_media: 2.3, escanteios_media: 8, cartoes_media: 2 },
-    { campeonato: 'Premier League', time1: 'Arsenal', time2: 'Manchester City', favorito: 'Manchester City', perfil: 'Controlado', gols_media: 2.5, escanteios_media: 7, cartoes_media: 3 },
-  ];
-  res.json(jogos);
+    function gerarAnalisesDia() {
+      const campeonato = document.getElementById('campeonato').value;
+      const times = timesPorCampeonato[campeonato];
 
-    )
-     alert'Todas as análises geradas!');
-});
+      for(let i=0; i<times.length; i++) {
+        for(let j=i+1; j<times.length; j++) {
+          gerarAnalise('under-over', [times[i], times[j]]);
+          gerarAnalise('escanteios', [times[i], times[j]]);
+          gerarAnalise('cartoes', [times[i], times[j]]);
+        }
+      }
+      alert('Todas análises do dia geradas!');
+    }
 
     document.getElementById('tipoFiltro').addEventListener('change', atualizarPainel);
   </script>
