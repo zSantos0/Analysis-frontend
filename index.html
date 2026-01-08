@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html>
 <head>
   <title>Analysis Site Pro</title>
@@ -151,13 +151,14 @@
 
     // Gera todas análises do dia automaticamente para cada jogo do campeonato
     function gerarAnalisesDia() {
-      const res = await fetch(`${backendURL}/jogos-do-dia`);
-  const jogos = await res.json();
+      const campeonato = document.getElementById('campeonato').value;
+      const times = timesPorCampeonato[campeonato];
 
-  jogos.forEach(j => {
-    gerarAnalise('under-over', [j.time1, j.time2]);
-    gerarAnalise('escanteios', [j.time1, j.time2]);
-    gerarAnalise('cartoes', [j.time1, j.time2]);
+      for(let i=0; i<times.length; i++) {
+        for(let j=i+1; j<times.length; j++) {
+          gerarAnalise('under-over', [times[i], times[j]]);
+          gerarAnalise('escanteios', [times[i], times[j]]);
+          gerarAnalise('cartoes', [times[i], times[j]]);
         }
       }
       alert('Todas análises do dia geradas!');
